@@ -51,7 +51,7 @@ class HelloWorld {
      * Once the context is "started", initialize the app.
      */
     async started() {
-        const url = this.baseUrl;
+        const url = 'https://mre-rooftop.herokuapp.com';
         this.context.logger.log('info', `baseUrl: ${this.baseUrl}`);
         // Create a new actor with no mesh, but some text. This operation is asynchronous, so
         // it returns a "forward" promise (a special promise, as we'll see later).
