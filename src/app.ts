@@ -216,7 +216,7 @@ export default class HelloWorld {
                 text: {
                     contents: '\n\nOpen',
                     anchor: TextAnchorLocation.TopCenter,
-                    color: {r: 1, g: 1, b: 1},
+                    color: {r: 0, g: 1, b: 0},
                     height: 0.6,
                     justify: TextJustify.Center
                 }
@@ -235,7 +235,7 @@ export default class HelloWorld {
                 text: {
                     contents: '\n\nClose',
                     anchor: TextAnchorLocation.TopCenter,
-                    color: {r: 1, g: 1, b: 1},
+                    color: {r: 1, g: 0, b: 0},
                     height: 0.6,
                     justify: TextJustify.Center
                 }
