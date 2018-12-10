@@ -310,7 +310,7 @@ export default class HelloWorld {
                     rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
                 },
                 text: {
-                    contents: 'Partial\n',
+                    contents: 'Party\n',
                     anchor: TextAnchorLocation.BottomCenter,
                     color: {r: 1, g: 1, b: 1},
                     height: 1,
