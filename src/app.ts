@@ -172,9 +172,8 @@ export default class HelloWorld {
                 events: []
             }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
         }
-        
+
         // <a-entity id='building1' position='-13 12 -40' scale='.5 .5 .5'></a-entity>
-        
         const building1 = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
                 name: 'Building1',
