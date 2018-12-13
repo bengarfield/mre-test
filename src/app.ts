@@ -183,6 +183,19 @@ export default class HelloWorld {
                 }
             }
         });
+        MRESDK.Actor.CreatePrimitive(this.context, {
+            definition: {
+                shape: MRESDK.PrimitiveShape.Plane,
+                dimensions: {x: 1, y: 1, z: 1.5}
+            },
+            actor: {
+                parentId: building1.value.id,
+                transform: {
+                    position: {x: 0, y: 0, z: 0},
+                    rotation: Quaternion.FromEulerAngles(0, 0, 0)
+                }
+            }
+        });
 
         const controlPanels = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
