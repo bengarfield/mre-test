@@ -178,7 +178,7 @@ export default class HelloWorld {
             actor: {
                 name: 'Building1',
                 transform: {
-                    position: {x: -13, y: 12, z: -40},
+                    position: {x: 13, y: 12, z: -40},
                     scale: {x: 0.5, y: 0.5, z: 0.5}
                 }
             }
@@ -192,7 +192,7 @@ export default class HelloWorld {
                 parentId: building1.value.id,
                 transform: {
                     position: {x: 0, y: 0, z: 0},
-                    rotation: Quaternion.FromEulerAngles(0, 0, 0)
+                    rotation: Quaternion.FromEulerAngles(90 * DegreesToRadians, 0, 0)
                 }
             }
         });
