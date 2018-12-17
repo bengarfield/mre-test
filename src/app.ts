@@ -519,12 +519,12 @@ export default class HelloWorld {
                     }
                 }
             });
-            window.createAnimation({
+            window.value.createAnimation({
                 animationName: "On",
                 keyframes: this.generateCurtainframes(0, 0, 180, 0),
                 events: []
             }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
-            window.createAnimation({
+            window.value.createAnimation({
                 animationName: "Off",
                 keyframes: this.generateCurtainframes(0, 180, 0, 0),
                 events: []
