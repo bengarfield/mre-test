@@ -562,6 +562,8 @@ export default class HelloWorld {
             building.children[i].transform.rotation.set(0, 0, 0.707, 0.707);
           }
         }
+        this.context.logger.log('info', building.children[0].transform.rotation);
+        this.context.logger.log('info', building.children[3].transform.rotation);
     }
 
     /**
