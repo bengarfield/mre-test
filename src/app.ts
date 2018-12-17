@@ -521,12 +521,12 @@ export default class HelloWorld {
             });
             window.value.createAnimation({
                 animationName: "On",
-                keyframes: this.generateCurtainframes(0, 0, 180, 0),
+                keyframes: this.generateCurtainframes(1, 0, 180, 0),
                 events: []
             }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
             window.value.createAnimation({
                 animationName: "Off",
-                keyframes: this.generateCurtainframes(0, 180, 0, 0),
+                keyframes: this.generateCurtainframes(1, 180, 0, 0),
                 events: []
             }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
         }
@@ -575,8 +575,8 @@ export default class HelloWorld {
             building.children[i].startAnimation('On');
           }
         }
-        this.context.logger.log('info', building.children[0].transform.rotation);
-        this.context.logger.log('info', building.children[3].transform.rotation);
+        // this.context.logger.log('info', building.children[0].transform.rotation);
+        // this.context.logger.log('info', building.children[3].transform.rotation);
     }
 
     /**
