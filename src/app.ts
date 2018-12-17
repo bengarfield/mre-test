@@ -183,59 +183,6 @@ export default class HelloWorld {
                 }
             }
         });
-        for (let i = 0; i < 100; i++) {
-            let x = -9 + (i * 2);
-            let y = 33;
-            if (i > 9) {
-                y = y - 3;
-                x = -9 + ((i - 10) * 2);
-            }
-            if (i > 19) {
-                y = y - 3;
-                x = -9 + ((i - 20) * 2);
-            }
-            if (i > 29) {
-                y = y - 3;
-                x = -9 + ((i - 30) * 2);
-            }
-            if (i > 39) {
-                y = y - 3;
-                x = -9 + ((i - 40) * 2);
-            }
-            if (i > 49) {
-                y = y - 3;
-                x = -9 + ((i - 50) * 2);
-            }
-            if (i > 59) {
-                y = y - 3;
-                x = -9 + ((i - 60) * 2);
-            }
-            if (i > 69) {
-                y = y - 3;
-                x = -9 + ((i - 70) * 2);
-            }
-            if (i > 79) {
-                y = y - 3;
-                x = -9 + ((i - 80) * 2);
-            }
-            if (i > 89) {
-                y = y - 3;
-                x = -9 + ((i - 90) * 2);
-            }
-            MRESDK.Actor.CreatePrimitive(this.context, {
-                definition: {
-                    shape: MRESDK.PrimitiveShape.Plane,
-                    dimensions: {x: 1, y: 1, z: 1.5}
-                },
-                actor: {
-                    parentId: building1.value.id,
-                    transform: {
-                        position: {x: x, y: y, z: 0.1},
-                        rotation: Quaternion.FromEulerAngles(90 * DegreesToRadians, 0, 0)
-                    }
-                }
-            });
-        }
         const building2 = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
                 name: 'Building2',
@@ -245,59 +192,6 @@ export default class HelloWorld {
                 }
             }
         });
-        for (let i = 0; i < 100; i++) {
-            let x = -9 + (i * 2);
-            let y = 33;
-            if (i > 9) {
-                y = y - 3;
-                x = -9 + ((i - 10) * 2);
-            }
-            if (i > 19) {
-                y = y - 3;
-                x = -9 + ((i - 20) * 2);
-            }
-            if (i > 29) {
-                y = y - 3;
-                x = -9 + ((i - 30) * 2);
-            }
-            if (i > 39) {
-                y = y - 3;
-                x = -9 + ((i - 40) * 2);
-            }
-            if (i > 49) {
-                y = y - 3;
-                x = -9 + ((i - 50) * 2);
-            }
-            if (i > 59) {
-                y = y - 3;
-                x = -9 + ((i - 60) * 2);
-            }
-            if (i > 69) {
-                y = y - 3;
-                x = -9 + ((i - 70) * 2);
-            }
-            if (i > 79) {
-                y = y - 3;
-                x = -9 + ((i - 80) * 2);
-            }
-            if (i > 89) {
-                y = y - 3;
-                x = -9 + ((i - 90) * 2);
-            }
-            MRESDK.Actor.CreatePrimitive(this.context, {
-                definition: {
-                    shape: MRESDK.PrimitiveShape.Plane,
-                    dimensions: {x: 1, y: 1, z: 1.5}
-                },
-                actor: {
-                    parentId: building2.value.id,
-                    transform: {
-                        position: {x: x, y: y, z: 0.1},
-                        rotation: Quaternion.FromEulerAngles(90 * DegreesToRadians, 0, 0)
-                    }
-                }
-            });
-        }
         const building3 = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
                 name: 'Building3',
@@ -307,59 +201,7 @@ export default class HelloWorld {
                 }
             }
         });
-        for (let i = 0; i < 100; i++) {
-            let x = -9 + (i * 2);
-            let y = 33;
-            if (i > 9) {
-                y = y - 3;
-                x = -9 + ((i - 10) * 2);
-            }
-            if (i > 19) {
-                y = y - 3;
-                x = -9 + ((i - 20) * 2);
-            }
-            if (i > 29) {
-                y = y - 3;
-                x = -9 + ((i - 30) * 2);
-            }
-            if (i > 39) {
-                y = y - 3;
-                x = -9 + ((i - 40) * 2);
-            }
-            if (i > 49) {
-                y = y - 3;
-                x = -9 + ((i - 50) * 2);
-            }
-            if (i > 59) {
-                y = y - 3;
-                x = -9 + ((i - 60) * 2);
-            }
-            if (i > 69) {
-                y = y - 3;
-                x = -9 + ((i - 70) * 2);
-            }
-            if (i > 79) {
-                y = y - 3;
-                x = -9 + ((i - 80) * 2);
-            }
-            if (i > 89) {
-                y = y - 3;
-                x = -9 + ((i - 90) * 2);
-            }
-            MRESDK.Actor.CreatePrimitive(this.context, {
-                definition: {
-                    shape: MRESDK.PrimitiveShape.Plane,
-                    dimensions: {x: 1, y: 1, z: 1.5}
-                },
-                actor: {
-                    parentId: building3.value.id,
-                    transform: {
-                        position: {x: x, y: y, z: 0.1},
-                        rotation: Quaternion.FromEulerAngles(90 * DegreesToRadians, 0, 0)
-                    }
-                }
-            });
-        }
+        this.addWndows(builidng1.value);
 
         const controlPanels = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
@@ -616,6 +458,10 @@ export default class HelloWorld {
         }
         );
 
+    }
+
+    private addWindows(building: Actor) {
+        
     }
 
     /**
