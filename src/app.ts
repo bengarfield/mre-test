@@ -553,6 +553,8 @@ export default class HelloWorld {
             str = str;
             break;
         }
+        this.context.logger.log('info', str);
+        this.context.logger.log('info', building.children[i].transform.toJSON());
         for (let i = 0; i < str.length; i++) {
           if (str.charAt(i) === '0') {
             building.children[i].transform.rotation.set(0.707, 0.707, 0, 0);
