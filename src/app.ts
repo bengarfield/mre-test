@@ -206,6 +206,8 @@ export default class HelloWorld {
         this.addWindows(building3.value);
 
         this.setWindows(building1.value, 'the');
+        this.setWindows(building2.value, 'roof');
+        this.setWindows(building3.value, 'top');
 
         const controlPanels = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
@@ -559,7 +561,7 @@ export default class HelloWorld {
           if (str.charAt(i) === '0') {
             building.children[i].transform.rotation.set(0.707, 0, 0, 0.707);
           } else {
-            building.children[i].transform.rotation.set(0, 0, 0, 0);
+            building.children[i].transform.position.set(0, 1000, 0);
           }
         }
         this.context.logger.log('info', building.children[0].transform.rotation);
