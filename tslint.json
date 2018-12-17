@@ -78,7 +78,7 @@
     "member-ordering": false,
     "max-line-length": [
       true,
-      120
+      500
     ],
     "new-parens": true,
     "no-angle-bracket-type-assertion": true,
