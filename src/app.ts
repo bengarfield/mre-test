@@ -506,7 +506,7 @@ export default class HelloWorld {
                 y = y - 3;
                 x = -9 + ((i - 90) * 2);
             }
-            MRESDK.Actor.CreatePrimitive(this.context, {
+            const window = MRESDK.Actor.CreatePrimitive(this.context, {
                 definition: {
                     shape: MRESDK.PrimitiveShape.Plane,
                     dimensions: {x: 1, y: 1, z: 1.5}
@@ -519,6 +519,16 @@ export default class HelloWorld {
                     }
                 }
             });
+            window.createAnimation({
+                animationName: "On",
+                keyframes: this.generateCurtainframes(0, 0, 180, 0),
+                events: []
+            }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
+            window.createAnimation({
+                animationName: "Off",
+                keyframes: this.generateCurtainframes(0, 180, 0, 0),
+                events: []
+            }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
         }
     }
 
@@ -559,9 +569,10 @@ export default class HelloWorld {
         this.context.logger.log('info', building.children[0].transform.rotation);
         for (let i = 0; i < str.length; i++) {
           if (str.charAt(i) === '0') {
-            building.children[i].transform.rotation.set(0.707, 0, 0, 0.707);
+            // building.children[i].transform.rotation.set(0.707, 0, 0, 0.707);
           } else {
-            building.children[i].transform.position.set(0, 1000, 0);
+            // building.children[i].transform.position.set(0, 1000, 0);
+            building.children[i].startAnimation('On');
           }
         }
         this.context.logger.log('info', building.children[0].transform.rotation);
