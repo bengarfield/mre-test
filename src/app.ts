@@ -517,7 +517,7 @@ export default class HelloWorld {
             });
         }
     }
-    
+
     private setWindows(building: Actor, str: string) {
         switch (str) {
           case 't':
@@ -546,6 +546,9 @@ export default class HelloWorld {
             break;
           case 'top':
             str = '1110000000010000000001000000000101110000000101000000010100000001110111000000010100000001110000000100';
+            break;
+          default:
+            str = str;
             break;
         }
         for (let i = 0; i < str.length; i++) {
