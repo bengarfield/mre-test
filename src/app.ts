@@ -555,9 +555,9 @@ export default class HelloWorld {
         }
         for (let i = 0; i < str.length; i++) {
           if (str.charAt(i) === '0') {
-            building.children[i].transform.rotation.set(Quaternion.FromEulerAngles(90 * DegreesToRadians, 0, 0));
+            building.children[i].transform.rotation.set(0.707, 0.707, 0, 0);
           } else {
-            building.children[i].transform.rotation.set(Quaternion.FromEulerAngles(90 * DegreesToRadians, 180 * DegreesToRadians, 0));
+            building.children[i].transform.rotation.set(0, 0, 0.707, 0.707);
           }
         }
     }
