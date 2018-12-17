@@ -201,7 +201,7 @@ export default class HelloWorld {
                 }
             }
         });
-        this.addWndows(builidng1.value);
+        this.addWindows(builing1.value);
 
         const controlPanels = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
