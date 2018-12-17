@@ -557,9 +557,9 @@ export default class HelloWorld {
         this.context.logger.log('info', building.children[0].transform.rotation);
         for (let i = 0; i < str.length; i++) {
           if (str.charAt(i) === '0') {
-            building.children[i].transform.rotation.set(0.707, 0.707, 0, 0);
+            building.children[i].transform.rotation.set(0.707, 0, 0, 0.707);
           } else {
-            building.children[i].transform.rotation.set(0, 0, 0.707, 0.707);
+            building.children[i].transform.rotation.set(0, 0.707, 0.707, 0);
           }
         }
         this.context.logger.log('info', building.children[0].transform.rotation);
