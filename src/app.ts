@@ -31,11 +31,11 @@ export default class HelloWorld {
     }
 
     private userJoined(user: MRESDK.User) {
-        this.context.logger.log('info', `user-joined: ${user.name}, ${user.id}`);
+        console.log(`user-joined: ${user.name}, ${user.id}`);
     }
 
     private userLeft(user: MRESDK.User) {
-        this.context.logger.log('info', `user-left: ${user.name}`);
+        console.log(`user-left: ${user.name}`);
     }
 
     /**
@@ -44,7 +44,7 @@ export default class HelloWorld {
     private async started() {
 
         const url = 'https://mre-rooftop.herokuapp.com';
-        this.context.logger.log('info', `baseUrl: ${this.baseUrl}`);
+        console.log(`baseUrl: ${this.baseUrl}`);
 
         // Create a new actor with no mesh, but some text. This operation is asynchronous, so
         // it returns a "forward" promise (a special promise, as we'll see later).
@@ -86,12 +86,20 @@ export default class HelloWorld {
         const curtainPromise = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
                 transform: {
-                    position: {x: 0, y: 2, z: 4.6},
+                    position: {x: 0, y: 2, z: -4.6},
                     scale: {x: 11, y: 1, z: 11}
                 }
             }
         });
-        this.curtains = curtainPromise.value;
+        const curtainPromise2 = MRESDK.Actor.CreateEmpty(this.context, {
+            actor: {
+                parentId: curtainPromise.value.id,
+                transform: {
+                    rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
+                }
+            }
+        });
+        this.curtains = curtainPromise2.value;
 
         // this.curtains.createAnimation({
         //     // The name is a unique identifier for this animation. We'll pass it to "startAnimation" later.
@@ -164,13 +172,13 @@ export default class HelloWorld {
                 keyframes: this.generateCurtainframes(i < 10 ? 0 + (.5 * i) : 4.5 - (.5 * (i - 10)),
                     -47.5 + (5 * i), i < 10 ? -47.5 : 47.5, 0),
                 events: []
-            }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
+            }).catch(reason => console.log(`Failed to create spin animation: ${reason}`));
             this.curtains.children[i].createAnimation({
                 animationName: "Close",
                 keyframes: this.generateCurtainframes(i < 10 ? 0 + (.5 * i) : 4.5 - (.5 * (i - 10)),
                     i < 10 ? -47.5 : 47.5, -47.5 + (5 * i), i < 10 ? 4.5 - (.5 * i) : 0 + (.5 * (i - 10))),
                 events: []
-            }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
+            }).catch(reason => console.log(`Failed to create spin animation: ${reason}`));
         }
 
         // <a-entity id='building1' position='-13 12 -40' scale='.5 .5 .5'></a-entity>
@@ -178,7 +186,7 @@ export default class HelloWorld {
             actor: {
                 name: 'Building1',
                 transform: {
-                    position: {x: 13, y: 12, z: -40},
+                    position: {x: -13, y: 12, z: 40},
                     scale: {x: 0.5, y: 0.5, z: 0.5}
                 }
             }
@@ -187,7 +195,7 @@ export default class HelloWorld {
             actor: {
                 name: 'Building2',
                 transform: {
-                    position: {x: -3, y: 17.5, z: -60},
+                    position: {x: 3, y: 17.5, z: 60},
                     scale: {x: 0.3, y: 0.3, z: 0.3}
                 }
             }
@@ -196,7 +204,7 @@ export default class HelloWorld {
             actor: {
                 name: 'Building3',
                 transform: {
-                    position: {x: -13, y: 15, z: -50},
+                    position: {x: 13, y: 15, z: 50},
                     scale: {x: 0.5, y: 0.5, z: 0.5}
                 }
             }
@@ -205,15 +213,15 @@ export default class HelloWorld {
         this.addWindows(building2.value);
         this.addWindows(building3.value);
 
-        this.setWindows(building1.value, 'the');
-        this.setWindows(building2.value, 'roof');
-        this.setWindows(building3.value, 'top');
+        // this.setWindows(building1.value, 'the');
+        // this.setWindows(building2.value, 'roof');
+        // this.setWindows(building3.value, 'top');
 
         const controlPanels = MRESDK.Actor.CreateEmpty(this.context, {
             actor: {
                 name: 'ControlPanels',
                 transform: {
-                    position: {x: 0, y: 0, z: 7.5}
+                    position: {x: 0, y: 0, z: -7.5}
                 }
             }
         });
@@ -223,7 +231,7 @@ export default class HelloWorld {
                 name: 'CurtainPanel',
                 parentId: controlPanels.value.id,
                 transform: {
-                    rotation: Quaternion.FromEulerAngles(-30 * DegreesToRadians, 0, 0)
+                    rotation: Quaternion.FromEulerAngles(30 * DegreesToRadians, 0, 0)
                 }
             }
         });
@@ -245,9 +253,8 @@ export default class HelloWorld {
             actor: {
                 parentId: curtainPanel.value.id,
                 transform: {
-                    position: {x: .05, y: 0, z: .026},
-                    scale: {x: .025, y: .025, z: .01},
-                    rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
+                    position: {x: -.05, y: 0, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
                 },
                 text: {
                     contents: '\n\nOpen',
@@ -264,9 +271,8 @@ export default class HelloWorld {
             actor: {
                 parentId: curtainPanel.value.id,
                 transform: {
-                    position: {x: -.05, y: 0, z: .026},
-                    scale: {x: .025, y: .025, z: .01},
-                    rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
+                    position: {x: .05, y: 0, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
                 },
                 text: {
                     contents: '\n\nClose',
@@ -284,9 +290,8 @@ export default class HelloWorld {
             actor: {
                 parentId: curtainPanel.value.id,
                 transform: {
-                    position: {x: .1, y: .13, z: .026},
-                    scale: {x: .025, y: .025, z: .01},
-                    rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
+                    position: {x: -.1, y: .13, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
                 },
                 text: {
                     contents: '\n\nLeft',
@@ -303,9 +308,8 @@ export default class HelloWorld {
             actor: {
                 parentId: curtainPanel.value.id,
                 transform: {
-                    position: {x: 0, y: .13, z: .026},
-                    scale: {x: .025, y: .025, z: .01},
-                    rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
+                    position: {x: 0, y: .13, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
                 },
                 text: {
                     contents: '\n\nCenter',
@@ -322,9 +326,8 @@ export default class HelloWorld {
             actor: {
                 parentId: curtainPanel.value.id,
                 transform: {
-                    position: {x: -.1, y: .13, z: .026},
-                    scale: {x: .025, y: .025, z: .01},
-                    rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
+                    position: {x: .1, y: .13, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
                 },
                 text: {
                     contents: '\n\nRight',
@@ -341,12 +344,11 @@ export default class HelloWorld {
             actor: {
                 parentId: curtainPanel.value.id,
                 transform: {
-                    position: {x: 0, y: .18, z: .026},
-                    scale: {x: .0125, y: .0125, z: .01},
-                    rotation: Quaternion.FromEulerAngles(0, 180 * DegreesToRadians, 0)
+                    position: {x: 0, y: .18, z: -.026},
+                    scale: {x: .0125, y: .0125, z: .01}
                 },
                 text: {
-                    contents: 'Partial\n',
+                    contents: 'Partial\n\n',
                     anchor: TextAnchorLocation.BottomCenter,
                     color: {r: 1, g: 1, b: 1},
                     height: 1,
@@ -368,21 +370,18 @@ export default class HelloWorld {
         // Button behaviors have two pairs of events: hover start/stop, and click start/stop.
         const openButton = openButtonPromise.value.setBehavior(MRESDK.ButtonBehavior);
 
-        // Trigger the grow/shrink animations on hover.
         openButton.onHover('enter', (userId: string) => {
-            // this.redCube.startAnimation('GrowIn');
-            this.context.logger.log('info', `Hover entered on green button.`);
+            console.log(`Hover entered on green button.`);
         }
         );
         openButton.onHover('exit', (userId: string) => {
-            // this.redCube.startAnimation('ShrinkOut');
-            this.context.logger.log('info', `Hover exited on green button.`);
+            console.log(`Hover exited on green button.`);
         }
         );
 
         let animating = false;
         openButton.onClick('pressed', (userId: string) => {
-            this.context.logger.log('info', `Green clicked by: ${userId}`);
+            console.log(`Green clicked by: ${userId}`);
             if (!animating) {
                 this.curtains.children[1].startAnimation('Open');
                 this.curtains.children[2].startAnimation('Open');
@@ -411,24 +410,22 @@ export default class HelloWorld {
             }
 
             if (userId === 'dd81b3d0-541f-c9ce-3977-2c2ceec584a6') {
-                this.context.logger.log('info', 'Green clicked by Ben.');
+                console.log('Green clicked by Ben.');
             }
         }
         );
 
         const closeButton = closeButtonPromise.value.setBehavior(MRESDK.ButtonBehavior);
 
-        // Trigger the grow/shrink animations on hover.
         closeButton.onHover('enter', (userId: string) => {
-            this.context.logger.log('info', `Hover entered on red button.`);
+            console.log(`Hover entered on red button.`);
         }
         );
         closeButton.onHover('exit', (userId: string) => {
-            this.context.logger.log('info', `Hover exited on red button.`);
+            console.log(`Hover exited on red button.`);
         }
         );
 
-        // When clicked, do a 360 sideways.
         closeButton.onClick('pressed', (userId: string) => {
             if (!animating) {
                 this.curtains.children[1].startAnimation('Close');
@@ -457,13 +454,177 @@ export default class HelloWorld {
                 }, 4500);
             }
 
-            this.context.logger.log('info', `Red clicked by: ${userId}`);
+            console.log(`Red clicked by: ${userId}`);
             if (userId === 'dd81b3d0-541f-c9ce-3977-2c2ceec584a6') {
-                this.context.logger.log('info', 'Red clicked by Ben.');
+                console.log('Red clicked by Ben.');
             }
         }
         );
 
+        const buildingPanel = MRESDK.Actor.CreateEmpty(this.context, {
+            actor: {
+                name: 'CurtainPanel',
+                parentId: controlPanels.value.id,
+                transform: {
+                    position: {x: 1, y: 0, z: 0},
+                    rotation: Quaternion.FromEulerAngles(30 * DegreesToRadians, 0, 0)
+                }
+            }
+        });
+        MRESDK.Actor.CreatePrimitive(this.context, {
+            definition: {
+                shape: MRESDK.PrimitiveShape.Box,
+                dimensions: {x: .4, y: .6, z: .05}
+            },
+            addCollider: true,
+            actor: {
+                parentId: buildingPanel.value.id
+            }
+        });
+        const buildingButton1Promise = Actor.CreateFromGLTF(this.context, {
+            resourceUrl: `${url}/redCube.gltf`,
+            colliderType: 'box',
+            actor: {
+                parentId: buildingPanel.value.id,
+                transform: {
+                    position: {x: -.1, y: .18, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
+                },
+                text: {
+                    contents: '\n\nOn',
+                    anchor: TextAnchorLocation.TopCenter,
+                    color: {r: 1, g: 1, b: 1},
+                    height: 0.6,
+                    justify: TextJustify.Center
+                }
+            }
+        });
+        const buildingButton2Promise = Actor.CreateFromGLTF(this.context, {
+            resourceUrl: `${url}/redCube.gltf`,
+            colliderType: 'box',
+            actor: {
+                parentId: buildingPanel.value.id,
+                transform: {
+                    position: {x: 0, y: .18, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
+                },
+                text: {
+                    contents: '\n\nOff',
+                    anchor: TextAnchorLocation.TopCenter,
+                    color: {r: 1, g: 1, b: 1},
+                    height: 0.6,
+                    justify: TextJustify.Center
+                }
+            }
+        });
+        const buildingButton3Promise = Actor.CreateFromGLTF(this.context, {
+            resourceUrl: `${url}/redCube.gltf`,
+            colliderType: 'box',
+            actor: {
+                parentId: buildingPanel.value.id,
+                transform: {
+                    position: {x: .1, y: .18, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
+                },
+                text: {
+                    contents: '\n\nTRT',
+                    anchor: TextAnchorLocation.TopCenter,
+                    color: {r: 1, g: 1, b: 1},
+                    height: 0.6,
+                    justify: TextJustify.Center
+                }
+            }
+        });
+        const buildingButton4Promise = Actor.CreateFromGLTF(this.context, {
+            resourceUrl: `${url}/redCube.gltf`,
+            colliderType: 'box',
+            actor: {
+                parentId: buildingPanel.value.id,
+                transform: {
+                    position: {x: -.1, y: .05, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
+                },
+                text: {
+                    contents: '\n\nSmile',
+                    anchor: TextAnchorLocation.TopCenter,
+                    color: {r: 1, g: 1, b: 1},
+                    height: 0.6,
+                    justify: TextJustify.Center
+                }
+            }
+        });
+        const buildingButton5Promise = Actor.CreateFromGLTF(this.context, {
+            resourceUrl: `${url}/redCube.gltf`,
+            colliderType: 'box',
+            actor: {
+                parentId: buildingPanel.value.id,
+                transform: {
+                    position: {x: 0, y: .05, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
+                },
+                text: {
+                    contents: '\n\nStar',
+                    anchor: TextAnchorLocation.TopCenter,
+                    color: {r: 1, g: 1, b: 1},
+                    height: 0.6,
+                    justify: TextJustify.Center
+                }
+            }
+        });
+        const buildingButton6Promise = Actor.CreateFromGLTF(this.context, {
+            resourceUrl: `${url}/redCube.gltf`,
+            colliderType: 'box',
+            actor: {
+                parentId: buildingPanel.value.id,
+                transform: {
+                    position: {x: .1, y: .05, z: -.026},
+                    scale: {x: .025, y: .025, z: .01}
+                },
+                text: {
+                    contents: '\n\nChecker',
+                    anchor: TextAnchorLocation.TopCenter,
+                    color: {r: 1, g: 1, b: 1},
+                    height: 0.6,
+                    justify: TextJustify.Center
+                }
+            }
+        });
+        const buildingButton1 = buildingButton1Promise.value.setBehavior(MRESDK.ButtonBehavior);
+        buildingButton1.onClick('pressed', (userId: string) => {
+            this.setWindows(building1.value, 'on');
+            this.setWindows(building2.value, 'on');
+            this.setWindows(building3.value, 'on');
+        });
+        const buildingButton2 = buildingButton2Promise.value.setBehavior(MRESDK.ButtonBehavior);
+        buildingButton2.onClick('pressed', (userId: string) => {
+            this.setWindows(building1.value, 'off');
+            this.setWindows(building2.value, 'off');
+            this.setWindows(building3.value, 'off');
+        });
+        const buildingButton3 = buildingButton3Promise.value.setBehavior(MRESDK.ButtonBehavior);
+        buildingButton3.onClick('pressed', (userId: string) => {
+            this.setWindows(building1.value, 'the');
+            this.setWindows(building2.value, 'roof');
+            this.setWindows(building3.value, 'top');
+        });
+        const buildingButton4 = buildingButton4Promise.value.setBehavior(MRESDK.ButtonBehavior);
+        buildingButton4.onClick('pressed', (userId: string) => {
+            this.setWindows(building1.value, 'smile');
+            this.setWindows(building2.value, 'smile');
+            this.setWindows(building3.value, 'smile');
+        });
+        const buildingButton5 = buildingButton5Promise.value.setBehavior(MRESDK.ButtonBehavior);
+        buildingButton5.onClick('pressed', (userId: string) => {
+            this.setWindows(building1.value, 'star');
+            this.setWindows(building2.value, 'star');
+            this.setWindows(building3.value, 'star');
+        });
+        const buildingButton6 = buildingButton6Promise.value.setBehavior(MRESDK.ButtonBehavior);
+        buildingButton6.onClick('pressed', (userId: string) => {
+            this.setWindows(building1.value, 'checker');
+            this.setWindows(building2.value, 'checker');
+            this.setWindows(building3.value, 'checker');
+        });
     }
 
     private addWindows(building: Actor) {
@@ -513,27 +674,52 @@ export default class HelloWorld {
                 },
                 actor: {
                     parentId: building.id,
+                    tag: 'on',
                     transform: {
                         position: {x: x, y: y, z: 0.1},
-                        rotation: Quaternion.FromEulerAngles(90 * DegreesToRadians, 0, 0)
+                        rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 0, 0)
                     }
                 }
             });
             window.value.createAnimation({
-                animationName: "On",
-                keyframes: this.generateCurtainframes(1, 0, 180, 0),
-                events: []
-            }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
-            window.value.createAnimation({
                 animationName: "Off",
-                keyframes: this.generateCurtainframes(1, 180, 0, 0),
+                keyframes: [{
+                    time: 0,
+                    value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 0, 0)}}
+                }, {
+                    time: 1,
+                    value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 180 * DegreesToRadians, 0)}}
+                }, {
+                    time: 1.1,
+                    value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 180 * DegreesToRadians, 0)}}
+                }],
                 events: []
-            }).catch(reason => this.context.logger.log('error', `Failed to create spin animation: ${reason}`));
+            }).catch(reason => console.log(`Failed to create spin animation: ${reason}`));
+            window.value.createAnimation({
+                animationName: "On",
+                keyframes: [{
+                    time: 0,
+                    value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 180 * DegreesToRadians, 0)}}
+                }, {
+                    time: 1,
+                    value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 0, 0)}}
+                }, {
+                    time: 1.1,
+                    value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 0, 0)}}
+                }],
+                events: []
+            }).catch(reason => console.log(`Failed to create spin animation: ${reason}`));
         }
     }
 
     private setWindows(building: Actor, str: string) {
         switch (str) {
+            case 'off':
+            str = '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+            break;
+          case 'on':
+            str = '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111';
+            break;
           case 't':
             str = '0000000000001111110000111111000000110000000011000000001100000000110000000011000000001100000000000000';
             break;
@@ -565,18 +751,25 @@ export default class HelloWorld {
             str = str;
             break;
         }
-        this.context.logger.log('info', str);
-        this.context.logger.log('info', building.children[0].transform.rotation);
+        console.log(str);
+        console.log(building.children[0].transform.rotation);
         for (let i = 0; i < str.length; i++) {
           if (str.charAt(i) === '0') {
             // building.children[i].transform.rotation.set(0.707, 0, 0, 0.707);
+            if (building.children[i].tag === 'on') {
+                building.children[i].startAnimation('Off');
+                building.children[i].tag = 'off';
+            }
           } else {
             // building.children[i].transform.position.set(0, 1000, 0);
-            building.children[i].startAnimation('On');
+            if (building.children[i].tag === 'off') {
+                building.children[i].startAnimation('On');
+                building.children[i].tag = 'on';
+            }
           }
         }
-        // this.context.logger.log('info', building.children[0].transform.rotation);
-        // this.context.logger.log('info', building.children[3].transform.rotation);
+        // console.log(building.children[0].transform.rotation);
+        // console.log(building.children[3].transform.rotation);
     }
 
     /**
