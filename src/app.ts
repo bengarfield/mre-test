@@ -2,6 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
+import * as GltfGen from '@microsoft/gltf-gen';
 import * as MRESDK from '@microsoft/mixed-reality-extension-sdk';
 import {
     Actor,
@@ -10,6 +11,7 @@ import {
     ButtonBehavior,
     Context,
     DegreesToRadians,
+    LookAtMode,
     Quaternion,
     TextAnchorLocation,
     TextJustify,
@@ -20,9 +22,11 @@ import {
  * The main class of this app. All the logic goes here.
  */
 export default class HelloWorld {
+    private connectedUsers: { [id: string]: MRESDK.User } = {};
     private text: Actor = null;
     private cube: Actor = null;
     private curtains: Actor = null;
+    private spotLight: Actor = null;
 
     constructor(private context: Context, private baseUrl: string) {
         this.context.onUserJoined(user => this.userJoined(user));
@@ -32,16 +36,59 @@ export default class HelloWorld {
 
     private userJoined(user: MRESDK.User) {
         console.log(`user-joined: ${user.name}, ${user.id}`);
+        this.connectedUsers[user.id] = user;
+        console.log(`Players Connected: ${Object.keys(this.connectedUsers).length}`);
+        console.log(this.connectedUsers);
+        this.addUserButton(user);
     }
 
     private userLeft(user: MRESDK.User) {
         console.log(`user-left: ${user.name}`);
+        delete this.connectedUsers[user.id];
+        console.log(`Players Connected: ${Object.keys(this.connectedUsers).length}`);
     }
+
+    private addUserButton(user: MRESDK.User) {
+        console.log(`Add User: ${user.name}`);
+        const button = MRESDK.Actor.CreatePrimitive(this.context, {
+            definition: {
+                shape: MRESDK.PrimitiveShape.Box,
+                dimensions: {x: .1, y: .1, z: .1}
+            },
+            addCollider: true,
+            actor: {
+                transform: {
+                    position: {x: 0 + (Object.keys(this.connectedUsers).length * 0.3), y: 0, z: -10}
+                }
+            }
+        });
+        MRESDK.Actor.CreateEmpty(this.context, {
+            actor: {
+                transform: {
+                    position: {x: 0 + (Object.keys(this.connectedUsers).length * 0.3), y: .2, z: -10}
+                },
+                text: {
+                    contents: user.name,
+                    anchor: TextAnchorLocation.TopCenter,
+                    color: {r: 1, g: 1, b: 1},
+                    height: 0.05,
+                    justify: TextJustify.Center
+                }
+            }
+        });
+        const buttonClick = button.value.setBehavior(MRESDK.ButtonBehavior);
+        buttonClick.onClick('pressed', (userId: string) => {
+            this.spotLight.lookAt(user, LookAtMode.TargetXY);
+        });
+    }
+
+    // Try this, native resource
+    // arofloatingheart
 
     /**
      * Once the context is "started", initialize the app.
      */
-    private async started() {
+    private started = async () => {
 
         const url = 'https://mre-rooftop.herokuapp.com';
         console.log(`baseUrl: ${this.baseUrl}`);
@@ -70,7 +117,7 @@ export default class HelloWorld {
         // Here we create an animation on our text actor. Animations have three mandatory arguments:
         // a name, an array of keyframes, and an array of events.
         // this.text.createAnimation({
-        //     // The name is a unique identifier for this animation. We'll pass it to "startAnimation" later.
+        //     // The name is a unique identifier for this animation. We'll pass it to "enableAnimation" later.
         //     animationName: "Spin",
         //     // Keyframes define the timeline for the animation: where the actor should be, and when.
         //     // We're calling the generateSpinKeyframes function to produce a simple 20-second revolution.
@@ -102,7 +149,7 @@ export default class HelloWorld {
         this.curtains = curtainPromise2.value;
 
         // this.curtains.createAnimation({
-        //     // The name is a unique identifier for this animation. We'll pass it to "startAnimation" later.
+        //     // The name is a unique identifier for this animation. We'll pass it to "enableAnimation" later.
         //     animationName: "Spin",
         //     // Keyframes define the timeline for the animation: where the actor should be, and when.
         //     // We're calling the generateSpinKeyframes function to produce a simple 20-second revolution.
@@ -129,7 +176,7 @@ export default class HelloWorld {
         //         }
         //     }
         // });
-
+    // const group = await this.context.assets.loadGltf('curtain', `${url}/piece.gltf`);
         for (let i = 0; i < 20; i++) {
             const curtainPiece = MRESDK.Actor.CreateEmpty(this.context, {
                 actor: {
@@ -145,7 +192,6 @@ export default class HelloWorld {
                 // prefabId: group.prefabs.byIndex(0).id,
                 // Also apply the following generic actor properties.
                 actor: {
-                    // Parent the glTF model to the text actor.
                     parentId: curtainPiece.value.id,
                     transform: {
                         position: {x: 0, y: -1, z: -1},
@@ -155,6 +201,17 @@ export default class HelloWorld {
                 }
             });
         }
+
+        // for (let i = 0; i < 20; i++) {
+        //     const actor = await MRESDK.Actor.CreateFromPrefab(this.context, {
+        //         prefabId: group.prefabs.byIndex(0).id,
+        //         actor: {
+        //             transform: {
+        //                 position: { x: 10 - i, y: 1, z: 0 }
+        //             }
+        //         }
+        //     });
+        // }
         // MRESDK.Actor.CreateFromGLTF(this.context, {
         //     resourceUrl: `https://bengarfield.github.io/AltVR/Enterprise-D/glb.glb`,
         //     // Also apply the following generic actor properties.
@@ -167,14 +224,14 @@ export default class HelloWorld {
         // });
 
         for (let i = 1; i < 19; i++) {
-            this.curtains.children[i].createAnimation({
-                animationName: "Open",
+            this.curtains.children[i].createAnimation(
+                "Open", {
                 keyframes: this.generateCurtainframes(i < 10 ? 0 + (.5 * i) : 4.5 - (.5 * (i - 10)),
                     -47.5 + (5 * i), i < 10 ? -47.5 : 47.5, 0),
                 events: []
             }).catch(reason => console.log(`Failed to create spin animation: ${reason}`));
-            this.curtains.children[i].createAnimation({
-                animationName: "Close",
+            this.curtains.children[i].createAnimation(
+                "Close", {
                 keyframes: this.generateCurtainframes(i < 10 ? 0 + (.5 * i) : 4.5 - (.5 * (i - 10)),
                     i < 10 ? -47.5 : 47.5, -47.5 + (5 * i), i < 10 ? 4.5 - (.5 * i) : 0 + (.5 * (i - 10))),
                 events: []
@@ -364,7 +421,7 @@ export default class HelloWorld {
 
         // Now that the text and its animation are all being set up, we can start playing
         // the animation.
-        // this.text.startAnimation('Spin');
+        // this.text.enableAnimation('Spin');
 
         // Set up cursor interaction. We add the input behavior ButtonBehavior to the cube.
         // Button behaviors have two pairs of events: hover start/stop, and click start/stop.
@@ -381,27 +438,27 @@ export default class HelloWorld {
 
         let animating = false;
         openButton.onClick('pressed', (userId: string) => {
-            console.log(`Green clicked by: ${userId}`);
+            console.log(`Green clicked by: ${this.connectedUsers[userId].name}`);
             if (!animating) {
-                this.curtains.children[1].startAnimation('Open');
-                this.curtains.children[2].startAnimation('Open');
-                this.curtains.children[3].startAnimation('Open');
-                this.curtains.children[4].startAnimation('Open');
-                this.curtains.children[5].startAnimation('Open');
-                this.curtains.children[6].startAnimation('Open');
-                this.curtains.children[7].startAnimation('Open');
-                this.curtains.children[8].startAnimation('Open');
-                this.curtains.children[9].startAnimation('Open');
+                this.curtains.children[1].enableAnimation('Open');
+                this.curtains.children[2].enableAnimation('Open');
+                this.curtains.children[3].enableAnimation('Open');
+                this.curtains.children[4].enableAnimation('Open');
+                this.curtains.children[5].enableAnimation('Open');
+                this.curtains.children[6].enableAnimation('Open');
+                this.curtains.children[7].enableAnimation('Open');
+                this.curtains.children[8].enableAnimation('Open');
+                this.curtains.children[9].enableAnimation('Open');
 
-                this.curtains.children[10].startAnimation('Open');
-                this.curtains.children[11].startAnimation('Open');
-                this.curtains.children[12].startAnimation('Open');
-                this.curtains.children[13].startAnimation('Open');
-                this.curtains.children[14].startAnimation('Open');
-                this.curtains.children[15].startAnimation('Open');
-                this.curtains.children[16].startAnimation('Open');
-                this.curtains.children[17].startAnimation('Open');
-                this.curtains.children[18].startAnimation('Open');
+                this.curtains.children[10].enableAnimation('Open');
+                this.curtains.children[11].enableAnimation('Open');
+                this.curtains.children[12].enableAnimation('Open');
+                this.curtains.children[13].enableAnimation('Open');
+                this.curtains.children[14].enableAnimation('Open');
+                this.curtains.children[15].enableAnimation('Open');
+                this.curtains.children[16].enableAnimation('Open');
+                this.curtains.children[17].enableAnimation('Open');
+                this.curtains.children[18].enableAnimation('Open');
 
                 animating = true;
                 setTimeout(() => {
@@ -428,25 +485,25 @@ export default class HelloWorld {
 
         closeButton.onClick('pressed', (userId: string) => {
             if (!animating) {
-                this.curtains.children[1].startAnimation('Close');
-                this.curtains.children[2].startAnimation('Close');
-                this.curtains.children[3].startAnimation('Close');
-                this.curtains.children[4].startAnimation('Close');
-                this.curtains.children[5].startAnimation('Close');
-                this.curtains.children[6].startAnimation('Close');
-                this.curtains.children[7].startAnimation('Close');
-                this.curtains.children[8].startAnimation('Close');
-                this.curtains.children[9].startAnimation('Close');
+                this.curtains.children[1].enableAnimation('Close');
+                this.curtains.children[2].enableAnimation('Close');
+                this.curtains.children[3].enableAnimation('Close');
+                this.curtains.children[4].enableAnimation('Close');
+                this.curtains.children[5].enableAnimation('Close');
+                this.curtains.children[6].enableAnimation('Close');
+                this.curtains.children[7].enableAnimation('Close');
+                this.curtains.children[8].enableAnimation('Close');
+                this.curtains.children[9].enableAnimation('Close');
 
-                this.curtains.children[10].startAnimation('Close');
-                this.curtains.children[11].startAnimation('Close');
-                this.curtains.children[12].startAnimation('Close');
-                this.curtains.children[13].startAnimation('Close');
-                this.curtains.children[14].startAnimation('Close');
-                this.curtains.children[15].startAnimation('Close');
-                this.curtains.children[16].startAnimation('Close');
-                this.curtains.children[17].startAnimation('Close');
-                this.curtains.children[18].startAnimation('Close');
+                this.curtains.children[10].enableAnimation('Close');
+                this.curtains.children[11].enableAnimation('Close');
+                this.curtains.children[12].enableAnimation('Close');
+                this.curtains.children[13].enableAnimation('Close');
+                this.curtains.children[14].enableAnimation('Close');
+                this.curtains.children[15].enableAnimation('Close');
+                this.curtains.children[16].enableAnimation('Close');
+                this.curtains.children[17].enableAnimation('Close');
+                this.curtains.children[18].enableAnimation('Close');
 
                 animating = true;
                 setTimeout(() => {
@@ -454,7 +511,7 @@ export default class HelloWorld {
                 }, 4500);
             }
 
-            console.log(`Red clicked by: ${userId}`);
+            console.log(`Red clicked by: ${this.connectedUsers[userId].name}`);
             if (userId === 'dd81b3d0-541f-c9ce-3977-2c2ceec584a6') {
                 console.log('Red clicked by Ben.');
             }
@@ -625,6 +682,77 @@ export default class HelloWorld {
             this.setWindows(building2.value, 'checker');
             this.setWindows(building3.value, 'checker');
         });
+
+        const spotLightPromise = MRESDK.Actor.CreateEmpty(this.context, {
+            actor: {
+                name: 'SpotLight',
+                transform: {
+                    position: {x: 0, y: 4, z: 0},
+                    rotation: Quaternion.FromEulerAngles(0, -90 * DegreesToRadians, 0)
+                }
+            }
+        });
+        this.spotLight = spotLightPromise.value;
+        MRESDK.Actor.CreatePrimitive(this.context, {
+            definition: {
+                shape: MRESDK.PrimitiveShape.Cylinder,
+                dimensions: {x: 0.4, y: 0.4, z: 0.5},
+                radius: 0.15
+            },
+            actor: {
+                name: 'light',
+                parentId: spotLightPromise.value.id
+            }
+        });
+        MRESDK.Actor.CreatePrimitive(this.context, {
+            definition: {
+                shape: MRESDK.PrimitiveShape.Cylinder,
+                dimensions: {x: 0.4, y: 0.4, z: 10},
+                radius: 0.01
+            },
+            actor: {
+                parentId: spotLightPromise.value.id,
+                name: 'beam',
+                transform: {
+                    position: {x: 0, y: 0, z: 5}
+                }
+            }
+        });
+
+        // console.log(Object.keys(this.connectedUsers)[0]);
+        // spotLight.value.lookAt('f210445f-d913-1592-913d-f6a0a818e875', LookAtMode.TargetXY);
+
+        const collisionTest = MRESDK.Actor.CreatePrimitive(this.context, {
+            definition: {
+                shape: MRESDK.PrimitiveShape.Box,
+                dimensions: {x: .5, y: .5, z: .5}
+            },
+            addCollider: true,
+            actor: {
+                collider: {
+                    enabled: true,
+                    isTrigger: true
+                },
+                transform: {
+                    position: {x: 0, y: .5, z: -20}
+                }
+            }
+        });
+        collisionTest.value.onTriggerEnter((col: MRESDK.CollisionData) => {
+            console.log(col);
+        });
+        collisionTest.value.onCollisionEnter((col: MRESDK.CollisionData) => {
+            console.log(col);
+        });
+
+        // MRESDK.Actor.CreateFromLibrary(this.context, {
+        //     resourceId: '1116239105672347773',
+        //     actor: {
+        //         transform: {
+        //             position: {x: 0, y: 0, z: -20}
+        //         }
+        //     }
+        // });
     }
 
     private addWindows(building: Actor) {
@@ -681,8 +809,8 @@ export default class HelloWorld {
                     }
                 }
             });
-            window.value.createAnimation({
-                animationName: "Off",
+            window.value.createAnimation(
+                "Off", {
                 keyframes: [{
                     time: 0,
                     value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 0, 0)}}
@@ -695,8 +823,8 @@ export default class HelloWorld {
                 }],
                 events: []
             }).catch(reason => console.log(`Failed to create spin animation: ${reason}`));
-            window.value.createAnimation({
-                animationName: "On",
+            window.value.createAnimation(
+                "On", {
                 keyframes: [{
                     time: 0,
                     value: {transform: {rotation: Quaternion.FromEulerAngles(-90 * DegreesToRadians, 180 * DegreesToRadians, 0)}}
@@ -751,19 +879,19 @@ export default class HelloWorld {
             str = str;
             break;
         }
-        console.log(str);
-        console.log(building.children[0].transform.rotation);
+        // console.log(str);
+        // console.log(building.children[0].transform.rotation);
         for (let i = 0; i < str.length; i++) {
           if (str.charAt(i) === '0') {
             // building.children[i].transform.rotation.set(0.707, 0, 0, 0.707);
             if (building.children[i].tag === 'on') {
-                building.children[i].startAnimation('Off');
+                building.children[i].enableAnimation('Off');
                 building.children[i].tag = 'off';
             }
           } else {
             // building.children[i].transform.position.set(0, 1000, 0);
             if (building.children[i].tag === 'off') {
-                building.children[i].startAnimation('On');
+                building.children[i].enableAnimation('On');
                 building.children[i].tag = 'on';
             }
           }
